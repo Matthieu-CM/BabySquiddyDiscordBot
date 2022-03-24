@@ -1,4 +1,5 @@
 require('dotenv').config()
+const fs = require('fs')
 const { Client, Channel } = require('discord.js');
 const client = new Client({ intents: ["GUILDS", "GUILD_MESSAGES", "DIRECT_MESSAGES", "GUILD_MESSAGE_REACTIONS"], partials: ["CHANNEL", "MESSAGE", "REACTION"] });
 const config = { configChannel: process.env.CONFIG_CHANNEL, postChannel: process.env.POST_CHANNEL, token: process.env.DISCORD_BOT_TOKEN, babySquiddyUID: process.env.BABYSQUIDDY_UID, authorizedAdmins: ["888820361972564068", "324180427516411905"] }
@@ -34,29 +35,39 @@ client.on('messageCreate', async msg => {
     try {
         if (!msg.content.startsWith(prefix)) return;
         if (config.authorizedAdmins.includes(msg.author.id)) {
-		console.log("ADMIN")
             if (msg.content === 'ping') {
                 msg.reply('pong');
             }
             const commandBody = msg.content.slice(prefix.length);
             let args = commandBody.split(' ');
             let command = args.shift().toLowerCase();
-		args.unshift(command.split('\n')[command.split('\n').length - 1])
-		command = command.split('\n')[0]
-		console.log('[', command, ']', command === "newpost")
+            args.unshift(command.split('\n')[command.split('\n').length - 1])
+            command = command.split('\n')[0]
             if (command === "newpost") {
                 Post = args.join(" ")
-		console.log(Post)
+                console.log(Post)
             }
-
+            console.log(command)
             if (command === "reactionadd") {
+                args.shift()
                 rolesReaction.push({ name: args[0], role: args[1] })
                 console.log(args)
             }
 
+            if (command === "backup") {
+
+                fs.writeFile('./backup.json', JSON.stringify(messages), err => {
+                    if (err) {
+                        console.error(err)
+                        return
+                    }
+                    //file written successfully
+                })
+            }
+
             if (command === "post") {
                 try {
-			console.log(Post)
+                    console.log(Post)
                     let data = await client.channels.cache.get(config.postChannel).send(Post)
                     rolesReaction.forEach((emoji) => {
                         data.react(emoji.name)
@@ -86,6 +97,7 @@ client.on("messageReactionAdd", async (reaction, user) => {
     }
 
     if (reaction.message.author.id !== config.babySquiddyUID) {
+        console.log(reaction.message.author.id)
         return
     }
     userToAddRole = await getUserFromReaction(client, reaction, user.id)
