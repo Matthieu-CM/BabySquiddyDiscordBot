@@ -34,15 +34,19 @@ client.on('messageCreate', async msg => {
     try {
         if (!msg.content.startsWith(prefix)) return;
         if (config.authorizedAdmins.includes(msg.author.id)) {
+		console.log("ADMIN")
             if (msg.content === 'ping') {
                 msg.reply('pong');
             }
             const commandBody = msg.content.slice(prefix.length);
-            const args = commandBody.split(' ');
-            const command = args.shift().toLowerCase();
-
+            let args = commandBody.split(' ');
+            let command = args.shift().toLowerCase();
+		args.unshift(command.split('\n')[command.split('\n').length - 1])
+		command = command.split('\n')[0]
+		console.log('[', command, ']', command === "newpost")
             if (command === "newpost") {
                 Post = args.join(" ")
+		console.log(Post)
             }
 
             if (command === "reactionadd") {
@@ -52,6 +56,7 @@ client.on('messageCreate', async msg => {
 
             if (command === "post") {
                 try {
+			console.log(Post)
                     let data = await client.channels.cache.get(config.postChannel).send(Post)
                     rolesReaction.forEach((emoji) => {
                         data.react(emoji.name)
