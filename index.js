@@ -64,6 +64,10 @@ client.on('messageCreate', async msg => {
                     //file written successfully
                 })
             }
+            if (command === "loadbackup") {
+                messages = require("./backup.json")
+                await client.channels.cache.get(config.postChannel).send("Backup Loaded")
+            }
 
             if (command === "post") {
                 try {
