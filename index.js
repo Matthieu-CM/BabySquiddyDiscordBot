@@ -1,3 +1,4 @@
+require('dotenv').config()
 const { Client, Channel } = require('discord.js');
 const client = new Client({ intents: ["GUILDS", "GUILD_MESSAGES", "DIRECT_MESSAGES", "GUILD_MESSAGE_REACTIONS"], partials: ["CHANNEL", "MESSAGE", "REACTION"] });
 const config = { configChannel: process.env.CONFIG_CHANNEL, postChannel: process.env.POST_CHANNEL, token: process.env.DISCORD_BOT_TOKEN, babySquiddyUID: process.env.BABYSQUIDDY_UID, authorizedAdmins: ["888820361972564068", "324180427516411905"] }
